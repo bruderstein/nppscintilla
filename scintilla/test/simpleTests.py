@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
+from __future__ import unicode_literals
 
-import ctypes, os, unittest
+import ctypes, os, sys, unittest
 
 import XiteWin
 
@@ -24,6 +25,13 @@ class TestSimple(unittest.TestCase):
 		self.assertEquals(self.ed.GetStyleAt(0), 0)
 		self.ed.ClearAll()
 		self.assertEquals(self.ed.Length, 0)
+
+	def testDeleteRange(self):
+		self.ed.AddText(5, b"abcde")
+		self.assertEquals(self.ed.Length, 5)
+		self.ed.DeleteRange(1, 2)
+		self.assertEquals(self.ed.Length, 3)
+		self.assertEquals(self.ed.Contents(), b"ade")
 
 	def testAddStyledText(self):
 		self.assertEquals(self.ed.EndStyled, 0)
@@ -210,10 +218,12 @@ class TestSimple(unittest.TestCase):
 				self.assertEquals(self.ed.FindColumn(0, col), 0)
 			elif col == 1:
 				self.assertEquals(self.ed.FindColumn(0, col), 1)
+			elif col == 8:
+				self.assertEquals(self.ed.FindColumn(0, col), 2)
 			elif col == 9:
 				self.assertEquals(self.ed.FindColumn(0, col), 3)
 			else:
-				self.assertEquals(self.ed.FindColumn(0, col), 2)
+				self.assertEquals(self.ed.FindColumn(0, col), 1)
 		self.ed.TabWidth = 4
 		self.assertEquals(self.ed.TabWidth, 4)
 		self.assertEquals(self.ed.GetColumn(0), 0)
@@ -361,12 +371,15 @@ class TestSimple(unittest.TestCase):
 
 	def testLinePositions(self):
 		text = b"ab\ncd\nef"
+		nl = b"\n"
+		if sys.version_info[0] == 3:
+			nl = ord(b"\n")
 		self.ed.AddText(len(text), text)
 		self.assertEquals(self.ed.LineFromPosition(-1), 0)
 		line = 0
 		for pos in range(len(text)+1):
 			self.assertEquals(self.ed.LineFromPosition(pos), line)
-			if pos < len(text) and text[pos] == ord("\n"):
+			if pos < len(text) and text[pos] == nl:
 				line += 1
 
 	def testWordPositions(self):
@@ -670,6 +683,7 @@ class TestMarkers(unittest.TestCase):
 		self.ed.MarkerDeleteAll(-1)
 
 	def testMarkerNext(self):
+		self.assertEquals(self.ed.MarkerNext(0, 2), -1)
 		h1 = self.ed.MarkerAdd(0,1)
 		h2 = self.ed.MarkerAdd(2,1)
 		self.assertEquals(self.ed.MarkerNext(0, 2), 0)
@@ -678,6 +692,9 @@ class TestMarkers(unittest.TestCase):
 		self.assertEquals(self.ed.MarkerPrevious(0, 2), 0)
 		self.assertEquals(self.ed.MarkerPrevious(1, 2), 0)
 		self.assertEquals(self.ed.MarkerPrevious(2, 2), 2)
+
+	def testMarkerNegative(self):
+		self.assertEquals(self.ed.MarkerNext(-1, 2), -1)
 
 	def testLineState(self):
 		self.assertEquals(self.ed.MaxLineState, 0)
@@ -1221,7 +1238,7 @@ class TestAutoComplete(unittest.TestCase):
 		self.ed = self.xite.ed
 		self.ed.ClearAll()
 		self.ed.EmptyUndoBuffer()
-		# 3 lines of 3 characters
+		# 1 line of 3 characters
 		t = b"xxx\n"
 		self.ed.AddText(len(t), t)
 
@@ -1300,6 +1317,36 @@ class TestAutoComplete(unittest.TestCase):
 
 		self.assertEquals(self.ed.AutoCActive(), 0)
 
+class TestDirectAccess(unittest.TestCase):
+
+	def setUp(self):
+		self.xite = XiteWin.xiteFrame
+		self.ed = self.xite.ed
+		self.ed.ClearAll()
+		self.ed.EmptyUndoBuffer()
+
+	def testGapPosition(self):
+		text = b"abcd"
+		self.ed.SetText(len(text), text)
+		self.assertEquals(self.ed.GapPosition, 4)
+		self.ed.TargetStart = 1
+		self.ed.TargetEnd = 1
+		rep = b"-"
+		self.ed.ReplaceTarget(len(rep), rep)
+		self.assertEquals(self.ed.GapPosition, 2)
+
+	def testCharacterPointerAndRangePointer(self):
+		text = b"abcd"
+		self.ed.SetText(len(text), text)
+		characterPointer = self.ed.CharacterPointer
+		rangePointer = self.ed.GetRangePointer(0,3)
+		self.assertEquals(characterPointer, rangePointer)
+		cpBuffer = ctypes.c_char_p(characterPointer)
+		self.assertEquals(cpBuffer.value, text)
+		# Gap will not be moved as already moved for CharacterPointer call
+		rangePointer = self.ed.GetRangePointer(1,3)
+		cpBuffer = ctypes.c_char_p(rangePointer)
+		self.assertEquals(cpBuffer.value, text[1:])
 
 #~ import os
 #~ for x in os.getenv("PATH").split(";"):

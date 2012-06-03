@@ -5,9 +5,13 @@
 // Copyright 1998-2001 by Neil Hodgson <neilh@scintilla.org>
 // The License.txt file describes the conditions under which this software may be distributed.
 
+#include <vector>
+#include <map>
+
 #include "Platform.h"
 
 #include "Scintilla.h"
+#include "XPM.h"
 #include "Indicator.h"
 
 #ifdef SCI_NAMESPACE
@@ -15,7 +19,7 @@ using namespace Scintilla;
 #endif
 
 void Indicator::Draw(Surface *surface, const PRectangle &rc, const PRectangle &rcLine) {
-	surface->PenColour(fore.allocated);
+	surface->PenColour(fore);
 	int ymid = (rc.bottom + rc.top) / 2;
 	if (style == INDIC_SQUIGGLE) {
 		surface->MoveTo(rc.left, rc.top);
@@ -83,7 +87,28 @@ void Indicator::Draw(Surface *surface, const PRectangle &rc, const PRectangle &r
 		rcBox.top = rcLine.top + 1;
 		rcBox.left = rc.left;
 		rcBox.right = rc.right;
-		surface->AlphaRectangle(rcBox, (style == INDIC_ROUNDBOX) ? 1 : 0, fore.allocated, fillAlpha, fore.allocated, outlineAlpha, 0);
+		surface->AlphaRectangle(rcBox, (style == INDIC_ROUNDBOX) ? 1 : 0, fore, fillAlpha, fore, outlineAlpha, 0);
+	} else if (style == INDIC_DOTBOX) {
+		PRectangle rcBox = rcLine;
+		rcBox.top = rcLine.top + 1;
+		rcBox.left = rc.left;
+		rcBox.right = rc.right;
+		// Cap width at 4000 to avoid large allocations when mistakes made
+		int width = Platform::Minimum(rcBox.Width(), 4000);
+		RGBAImage image(width, rcBox.Height(), 0);
+		// Draw horizontal lines top and bottom
+		for (int x=0; x<width; x++) {
+			for (int y=0; y<rcBox.Height(); y += rcBox.Height()-1) {
+				image.SetPixel(x, y, fore, ((x + y) % 2) ? outlineAlpha : fillAlpha);
+			}
+		}
+		// Draw vertical lines left and right
+		for (int y=1; y<rcBox.Height(); y++) {
+			for (int x=0; x<width; x += width-1) {
+				image.SetPixel(x, y, fore, ((x + y) % 2) ? outlineAlpha : fillAlpha);
+			}
+		}
+		surface->DrawRGBAImage(rcBox, image.GetWidth(), image.GetHeight(), image.Pixels());
 	} else if (style == INDIC_DASH) {
 		int x = rc.left;
 		while (x < rc.right) {
@@ -95,7 +120,7 @@ void Indicator::Draw(Surface *surface, const PRectangle &rc, const PRectangle &r
 		int x = rc.left;
 		while (x < rc.right) {
 			PRectangle rcDot(x, ymid, x+1, ymid+1);
-			surface->FillRectangle(rcDot, fore.allocated);
+			surface->FillRectangle(rcDot, fore);
 			x += 2;
 		}
 	} else {	// Either INDIC_PLAIN or unknown

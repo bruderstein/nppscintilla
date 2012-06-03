@@ -20,6 +20,7 @@
 #include <time.h>
 
 #include <vector>
+#include <map>
 
 #include "ILexer.h"
 
@@ -55,6 +56,8 @@
 extern "C" NSString* ScintillaRecPboardType;
 
 @class ScintillaView;
+
+@class FindHighlightLayer;
 
 /**
  * Helper class to be used as timer target (NSTimer).
@@ -115,6 +118,11 @@ private:
   
   int scrollSpeed;
   int scrollTicks;
+  NSTimer* tickTimer;
+  NSTimer* idleTimer;
+	
+  FindHighlightLayer *layerFindIndicator;
+
 protected:
   PRectangle GetClientRectangle();
   Point ConvertPoint(NSPoint point);
@@ -123,6 +131,7 @@ protected:
   virtual void Finalise();
   virtual CaseFolder *CaseFolderForEncoding();
   virtual std::string CaseMapString(const std::string &s, int caseMapping);
+  virtual void CancelModes();
 public:
   NSView* ContentView();
 
@@ -142,6 +151,7 @@ public:
   bool SetIdle(bool on);
   void SetMouseCapture(bool on);
   bool HaveMouseCapture();
+  void ScrollText(int linesToMove);
   void SetVerticalScrollPos();
   void SetHorizontalScrollPos();
   bool ModifyScrollBars(int nMax, int nPage);
@@ -204,6 +214,11 @@ public:
   void HandleCommand(NSInteger command);
 
   virtual void ActiveStateChanged(bool isActive);
+
+  // Find indicator
+  void ShowFindIndicatorForRange(NSRange charRange, BOOL retaining);
+  void MoveFindIndicatorWithBounce(BOOL bounce);
+  void HideFindIndicator();
 };
 
 
