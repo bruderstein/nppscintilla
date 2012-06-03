@@ -141,6 +141,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmNncrontab);
 	LINK_LEXER(lmNsis);
 	LINK_LEXER(lmNull);
+	LINK_LEXER(lmObjC);
 	LINK_LEXER(lmOctave);
 	LINK_LEXER(lmOpal);
 	LINK_LEXER(lmPascal);
@@ -161,6 +162,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmREBOL);
 	LINK_LEXER(lmRuby);
 	LINK_LEXER(lmScriptol);
+	LINK_LEXER(lmSearchResult);
 	LINK_LEXER(lmSmalltalk);
 	LINK_LEXER(lmSML);
 	LINK_LEXER(lmSorc);
@@ -173,6 +175,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmTCL);
 	LINK_LEXER(lmTeX);
 	LINK_LEXER(lmTxt2tags);
+	LINK_LEXER(lmUserDefine);
 	LINK_LEXER(lmVB);
 	LINK_LEXER(lmVBScript);
 	LINK_LEXER(lmVerilog);

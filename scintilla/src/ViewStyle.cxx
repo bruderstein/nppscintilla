@@ -177,6 +177,7 @@ ViewStyle::ViewStyle(const ViewStyle &source) {
 	caretcolour.desired = source.caretcolour.desired;
 	additionalCaretColour.desired = source.additionalCaretColour.desired;
 	showCaretLineBackground = source.showCaretLineBackground;
+	showCaretLineBackgroundAlways = source.showCaretLineBackgroundAlways;
 	caretLineBackground.desired = source.caretLineBackground.desired;
 	caretLineAlpha = source.caretLineAlpha;
 	edgecolour.desired = source.edgecolour.desired;
@@ -269,6 +270,7 @@ void ViewStyle::Init(size_t stylesSize_) {
 	caretcolour.desired = ColourDesired(0, 0, 0);
 	additionalCaretColour.desired = ColourDesired(0x7f, 0x7f, 0x7f);
 	showCaretLineBackground = false;
+	showCaretLineBackgroundAlways = false;
 	caretLineBackground.desired = ColourDesired(0xff, 0xff, 0);
 	caretLineAlpha = SC_ALPHA_NOALPHA;
 	edgecolour.desired = ColourDesired(0xc0, 0xc0, 0xc0);
