@@ -870,7 +870,11 @@ sptr_t ScintillaWin::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam
 				Platform::IsKeyDown(VK_MENU));
 			}
 			break;
-
+			
+		case WM_MBUTTONDOWN:
+            ::SetFocus(MainHWND());
+            break;
+			
 		case WM_MOUSEMOVE:
 			SetTrackMouseLeaveEvent(true);
 			ButtonMove(Point::FromLong(lParam));

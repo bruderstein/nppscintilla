@@ -274,6 +274,7 @@ void ViewStyle::Init(size_t stylesSize_) {
 	caretcolour = ColourDesired(0, 0, 0);
 	additionalCaretColour = ColourDesired(0x7f, 0x7f, 0x7f);
 	showCaretLineBackground = false;
+	showCaretLineBackgroundAlways = false;
 	caretLineBackground = ColourDesired(0xff, 0xff, 0);
 	caretLineAlpha = SC_ALPHA_NOALPHA;
 	edgecolour = ColourDesired(0xc0, 0xc0, 0xc0);

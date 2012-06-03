@@ -136,6 +136,7 @@ LEXOBJS=\
 	$(DIR_O)\LexMySQL.obj \
 	$(DIR_O)\LexNimrod.obj \
 	$(DIR_O)\LexNsis.obj \
+	$(DIR_O)\LexObjC.obj \
 	$(DIR_O)\LexOpal.obj \
 	$(DIR_O)\LexOScript.obj \
 	$(DIR_O)\LexOthers.obj \
@@ -153,6 +154,7 @@ LEXOBJS=\
 	$(DIR_O)\LexRebol.obj \
 	$(DIR_O)\LexRuby.obj \
 	$(DIR_O)\LexScriptol.obj \
+	$(DIR_O)\LexSearchResult.obj \
 	$(DIR_O)\LexSmalltalk.obj \
 	$(DIR_O)\LexSML.obj \
 	$(DIR_O)\LexSorcus.obj \
@@ -166,6 +168,7 @@ LEXOBJS=\
 	$(DIR_O)\LexTCMD.obj \
 	$(DIR_O)\LexTeX.obj \
 	$(DIR_O)\LexTxt2tags.obj \
+	$(DIR_O)\LexUser.obj \
 	$(DIR_O)\LexVB.obj \
 	$(DIR_O)\LexVerilog.obj \
 	$(DIR_O)\LexVHDL.obj \
@@ -388,6 +391,8 @@ $(DIR_O)\LexNimrod.obj: ..\lexers\LexNimrod.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexNsis.obj: ..\lexers\LexNsis.cxx $(LEX_HEADERS)
 
+$(DIR_O)\LexObjC.obj: ..\lexers\LexObjC.cxx $(LEX_HEADERS)
+
 $(DIR_O)\LexOpal.obj: ..\lexers\LexOpal.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexOScript.obj: ..\lexers\LexOScript.cxx $(LEX_HEADERS)
@@ -422,6 +427,8 @@ $(DIR_O)\LexRuby.obj: ..\lexers\LexRuby.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexScriptol.obj: ..\lexers\LexScriptol.cxx $(LEX_HEADERS)
 
+$(DIR_O)\LexSearchResult.obj: ..\lexers\LexSearchResult.cxx $(LEX_HEADERS)
+
 $(DIR_O)\LexSmalltalk.obj: ..\lexers\LexSmalltalk.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexSML.obj: ..\lexers\LexSML.cxx $(LEX_HEADERS)
@@ -447,6 +454,8 @@ $(DIR_O)\LexTCMD.obj: ..\lexers\LexTCMD.cxx $(LEX_HEADERS)
 $(DIR_O)\LexTeX.obj: ..\lexers\LexTeX.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexTxt2tags.obj: ..\lexers\LexTxt2tags.cxx $(LEX_HEADERS)
+
+$(DIR_O)\LexUser.obj: ..\lexers\LexUser.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexVB.obj: ..\lexers\LexVB.cxx $(LEX_HEADERS)
 

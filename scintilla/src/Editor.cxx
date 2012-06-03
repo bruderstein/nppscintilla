@@ -1001,6 +1001,7 @@ void Editor::ScrollTo(int line, bool moveThumb) {
 		if (moveThumb) {
 			SetVerticalScrollPos();
 		}
+		NotifyScrolled();
 	}
 }
 
@@ -3187,9 +3188,10 @@ void Editor::DrawLine(Surface *surface, ViewStyle &vsDraw, int line, int lineVis
 	}
 
 	// Draw any translucent whole line states
-	rcSegment = rcLine;
-	if (caret.active && vsDraw.showCaretLineBackground && ll->containsCaret) {
-		SimpleAlphaRectangle(surface, rcSegment, vsDraw.caretLineBackground, vsDraw.caretLineAlpha);
+	rcSegment.left = 0;
+	rcSegment.right = rcLine.right - 1;
+	if ((caret.active || vsDraw.showCaretLineBackgroundAlways) && vsDraw.showCaretLineBackground && ll->containsCaret) {
+		SimpleAlphaRectangle(surface, rcSegment, vsDraw.caretLineBackground.allocated, vsDraw.caretLineAlpha);
 	}
 	marks = pdoc->GetMark(line);
 	for (markBit = 0; (markBit < 32) && marks; markBit++) {
@@ -3716,6 +3718,8 @@ long Editor::FormatRange(bool draw, Sci_RangeToFormat *pfr) {
 	vsPrint.whitespaceBackgroundSet = false;
 	vsPrint.whitespaceForegroundSet = false;
 	vsPrint.showCaretLineBackground = false;
+	vsPrint.showCaretLineBackgroundAlways = false;
+	
 	// Don't highlight matching braces using indicators
 	vsPrint.braceHighlightIndicatorSet = false;
 	vsPrint.braceBadLightIndicatorSet = false;
@@ -4403,6 +4407,12 @@ void Editor::NotifyUpdateUI() {
 void Editor::NotifyPainted() {
 	SCNotification scn = {0};
 	scn.nmhdr.code = SCN_PAINTED;
+	NotifyParent(scn);
+}
+
+void Editor::NotifyScrolled() {
+	SCNotification scn = {0};
+	scn.nmhdr.code = SCN_SCROLLED;
 	NotifyParent(scn);
 }
 
@@ -8255,6 +8265,11 @@ sptr_t Editor::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam) {
 		vs.showCaretLineBackground = wParam != 0;
 		InvalidateStyleRedraw();
 		break;
+	case SCI_GETCARETLINEVISIBLEALWAYS:
+		return vs.showCaretLineBackgroundAlways;
+	case SCI_SETCARETLINEVISIBLEALWAYS:
+		vs.showCaretLineBackgroundAlways = wParam != 0;
+		InvalidateStyleRedraw();
 	case SCI_GETCARETLINEBACK:
 		return vs.caretLineBackground.AsLong();
 	case SCI_SETCARETLINEBACK:
